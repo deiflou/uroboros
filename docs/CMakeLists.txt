@@ -21,7 +21,7 @@ if(UROBOROS_BUILD_DOCS)
             "${SPHINX_BUILD_EXECUTABLE}"
             "${CMAKE_SOURCE_DIR}/docs"
             ${UROBOROS_DOCS_OUTPUT_DIRECTORY}
-            "-q -d \"${CMAKE_CURRENT_BINARY_DIR}/.doctrees\""
+            "-d \"${CMAKE_CURRENT_BINARY_DIR}/.doctrees\""
         )
 
         install(
