@@ -1,0 +1,9 @@
+[submodule "third_party/function_libraries/pmed/fixed_size_function"]
+	path = third_party/function_libraries/pmed/fixed_size_function
+	url = https://github.com/pmed/fixed_size_function.git
+[submodule "third_party/function_libraries/skarupke/std_function"]
+	path = third_party/function_libraries/skarupke/std_function
+	url = https://github.com/skarupke/std_function.git
+[submodule "third_party/function_libraries/naios/function2"]
+	path = third_party/function_libraries/naios/function2
+	url = https://github.com/Naios/function2.git
