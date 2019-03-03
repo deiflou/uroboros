@@ -57,10 +57,11 @@ public:
     basic_store(reducer_type reducer, state_type state = {})
     {
         if (!reducer)
-            throw std::runtime_error
-            (
-                "The reducer must be a non empty function."
-            );
+            throw
+                std::runtime_error
+                (
+                    "The reducer must be a non empty function."
+                );
 
         reducer_ = reducer;
         state_ = state;
@@ -75,14 +76,15 @@ public:
     state() const
     {
         if (is_dispatching_)
-            throw std::runtime_error
-            (
-                "store::state() can not be called while "
-                "the reducer is executing.\n"
-                "The state has already been passed as "
-                "a parameter to the reducer.\n"
-                "This parameter must be used instead tho get the state."
-            );
+            throw
+                std::runtime_error
+                (
+                    "store::state() can not be called while "
+                    "the reducer is executing.\n"
+                    "The state has already been passed as "
+                    "a parameter to the reducer.\n"
+                    "This parameter must be used instead tho get the state."
+                );
 
         return state_;
     }
@@ -92,16 +94,19 @@ public:
     subscribe(listener_type listener)
     {
         if (!listener)
-            throw std::runtime_error
-            (
-                "The listener must be a non empty function."
-            );
+            throw
+                std::runtime_error
+                (
+                    "The listener must be a non empty function."
+                );
 
         if (is_dispatching_)
-            throw std::runtime_error
-            (
-                "store::subscribe() can not be called while the reducer is executing."
-            );
+            throw
+                std::runtime_error
+                (
+                    "store::subscribe() can not be called while "
+                    "the reducer is executing."
+                );
 
         static unsigned int next_listener_id{0};
 
@@ -115,11 +120,12 @@ public:
                     return;
 
                 if (this->is_dispatching_)
-                    throw std::runtime_error
-                    (
-                        "The unsubscriber function can not be "
-                        "called while the reducer is executing."
-                    );
+                    throw
+                        std::runtime_error
+                        (
+                            "The unsubscriber function can not be "
+                            "called while the reducer is executing."
+                        );
 
                 this->listeners_.erase(listener_iterator);
             };
@@ -139,10 +145,11 @@ public:
     replace_reducer(reducer_type reducer)
     {
         if (!reducer)
-            throw std::runtime_error
-            (
-                "The reducer must be a non empty function."
-            );
+            throw
+                std::runtime_error
+                (
+                    "The reducer must be a non empty function."
+                );
 
         reducer_ = reducer;
     }
@@ -153,11 +160,12 @@ protected:
     reduce(action_type action)
     {
         if (is_dispatching_)
-            throw std::runtime_error
-            (
-                "You may not dispatch actions while "
-                "the reducer is executing."
-            );
+            throw
+                std::runtime_error
+                (
+                    "You may not dispatch actions while "
+                    "the reducer is executing."
+                );
 
         {
             detail::scope_guard guard

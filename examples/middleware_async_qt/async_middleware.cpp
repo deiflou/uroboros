@@ -39,15 +39,12 @@ enum class async_task_status_type
     canceled
 };
 
+static int current_task_id{0};
+static std::unordered_map<int, async_task_status_type> async_task_status;
+static std::mutex async_task_status_mutex;
+
 void
-task
-(
-    middleware_api_type api,
-    int task_id,
-    int duration,
-    std::unordered_map<int, async_task_status_type> & async_task_status,
-    std::mutex & async_task_status_mutex
-)
+task(middleware_api_type api, int task_id, int duration)
 {
     {
         std::lock_guard lock_guard(async_task_status_mutex);
@@ -93,14 +90,25 @@ task
 }
 
 void
-handle_start_async_task_action
-(
-    middleware_api_type api,
-    int task_id,
-    int duration,
-    std::unordered_map<int, async_task_status_type> & async_task_status,
-    std::mutex & async_task_status_mutex
-)
+handle_finishing_async_task(middleware_api_type api, int task_id)
+{
+    async_task_status_type status;
+
+    {
+        std::lock_guard lock_guard(async_task_status_mutex);
+        status = async_task_status.at(task_id);
+        if (status == async_task_status_type::canceled_before_starting)
+            return;
+        async_task_status.erase(task_id);
+    }
+
+    if (status != async_task_status_type::canceled)
+        api.dispatch(set_async_task_info_progress_action_type{task_id, 100});
+    api.dispatch(remove_async_task_info_action_type{task_id});
+}
+
+void
+handle_start_async_task_action(middleware_api_type api, int task_id, int duration)
 {
     {
         std::lock_guard lock_guard(async_task_status_mutex);
@@ -109,51 +117,20 @@ handle_start_async_task_action
     
     api.dispatch(add_async_task_info_action_type{task_id});
 
-    stlab::async
-    (
-        stlab::default_executor,
-        task,
-        api,
-        task_id,
-        duration,
-        std::ref(async_task_status),
-        std::ref(async_task_status_mutex)
-    ).then
-    (
-        stlab::main_executor,
-        [
-            api,
-            task_id,
-            &async_task_status,
-            &async_task_status_mutex
-        ]
-        ()
-        {
-            async_task_status_type status;
-
+    stlab::async(stlab::default_executor, task, api, task_id, duration)
+        .then
+        (
+            stlab::main_executor,
+            [api, task_id]()
             {
-                std::lock_guard lock_guard(async_task_status_mutex);
-                status = async_task_status.at(task_id);
-                if (status == async_task_status_type::canceled_before_starting)
-                    return;
-                async_task_status.erase(task_id);
+                handle_finishing_async_task(api, task_id);
             }
-
-            if (status != async_task_status_type::canceled)
-                api.dispatch(set_async_task_info_progress_action_type{task_id, 100});
-            api.dispatch(remove_async_task_info_action_type{task_id});
-        }
-    ).detach();
+        )
+        .detach();
 }
 
 void
-handle_cancel_async_task_action
-(
-    middleware_api_type api,
-    int task_id,
-    std::unordered_map<int, async_task_status_type> & async_task_status,
-    std::mutex & async_task_status_mutex
-)
+handle_cancel_async_task_action(middleware_api_type api, int task_id)
 {
     std::lock_guard lock_guard(async_task_status_mutex);
 
@@ -176,10 +153,6 @@ async_middleware(middleware_api_type api)
             return
                 [=](action_type action) -> action_type
                 {
-                    static int current_task_id{0};
-                    static std::unordered_map<int, async_task_status_type> async_task_status;
-                    static std::mutex async_task_status_mutex;
-
                     if
                     (
                         !std::holds_alternative<start_async_task_action_type>(action) &&
@@ -192,17 +165,13 @@ async_middleware(middleware_api_type api)
                         (
                             api,
                             current_task_id++,
-                            std::get<start_async_task_action_type>(action).duration,
-                            std::ref(async_task_status),
-                            std::ref(async_task_status_mutex)
+                            std::get<start_async_task_action_type>(action).duration
                         );
                     else if (std::holds_alternative<cancel_async_task_action_type>(action))
                         handle_cancel_async_task_action
                         (
                             api,
-                            std::get<cancel_async_task_action_type>(action).id,
-                            std::ref(async_task_status),
-                            std::ref(async_task_status_mutex)
+                            std::get<cancel_async_task_action_type>(action).id
                         );
 
                     return action;

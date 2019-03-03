@@ -5,7 +5,7 @@ project(uroboros VERSION 0.1.0)
 include(GNUInstallDirs)
 include("cmake/utilities.cmake")
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(UROBOROS_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/build")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules/")
 if(WIN32)

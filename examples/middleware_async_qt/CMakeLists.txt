@@ -21,12 +21,12 @@ if(UROBOROS_BUILD_EXAMPLE_MIDDLEWARE_ASYNC_QT)
     
     add_executable(
         middleware_async_qt
-        main.cpp
-        window.hpp
-        window.cpp
-        reducer.cpp
         async_middleware.cpp
+        main.cpp
+        reducer.cpp
         types.hpp
+        window.cpp
+        window.hpp
     )
     target_link_libraries(
         middleware_async_qt
