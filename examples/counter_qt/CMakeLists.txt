@@ -21,7 +21,7 @@ if(UROBOROS_BUILD_EXAMPLE_COUNTER_QT)
     set_target_properties(
         counter_qt
         PROPERTIES
-        CMAKE_AUTOMOC ON
+        AUTOMOC ON
         RUNTIME_OUTPUT_DIRECTORY ${UROBOROS_EXAMPLES_OUTPUT_DIRECTORY}
     )
 endif()

@@ -195,6 +195,8 @@ main()
 {
     store_type store(reducer, {});
 
+    show_info();
+
     while (true)
     {
         std::string input;

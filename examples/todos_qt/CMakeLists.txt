@@ -30,7 +30,7 @@ if(UROBOROS_BUILD_EXAMPLE_TODOS_QT)
     set_target_properties(
         todos_qt
         PROPERTIES
-        CMAKE_AUTOMOC ON
+        AUTOMOC ON
         RUNTIME_OUTPUT_DIRECTORY ${UROBOROS_EXAMPLES_OUTPUT_DIRECTORY}
     )
 endif()

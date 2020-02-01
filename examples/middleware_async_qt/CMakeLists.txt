@@ -38,7 +38,7 @@ if(UROBOROS_BUILD_EXAMPLE_MIDDLEWARE_ASYNC_QT)
     set_target_properties(
         middleware_async_qt
         PROPERTIES
-        CMAKE_AUTOMOC ON
+        AUTOMOC ON
         RUNTIME_OUTPUT_DIRECTORY ${UROBOROS_EXAMPLES_OUTPUT_DIRECTORY}
     )
 endif()

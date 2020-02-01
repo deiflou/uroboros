@@ -37,7 +37,8 @@ constexpr auto & executor = stlab::main_executor;
 namespace uroboros::examples
 {
     
-struct executor_type {
+struct executor_type
+{
     using result_type = void;
 
     template <typename F>

@@ -31,13 +31,14 @@
 #include <utility>
 #include <vector>
 #include <atomic>
+#include <stlab/concurrency/task.hpp>
 
 namespace uroboros::examples
 {
 
 struct task_manager
 {
-    using task_type = std::function<void()>;
+    using task_type = stlab::task<void()>;
     using queue_type = std::deque<task_type>;
 
     task_manager(task_manager const &) = delete;
@@ -52,17 +53,10 @@ struct task_manager
     }
 
     void
-    add_task(task_type const & task)
-    {
-        std::lock_guard<std::mutex> lock_guard(task_queue_mutex_);
-        task_queue_.push_back(task);
-    }
-
-    void
     add_task(task_type && task)
     {
         std::lock_guard<std::mutex> lock_guard(task_queue_mutex_);
-        task_queue_.push_back(std::move(task));
+        task_queue_.emplace_back(std::move(task));
     }
 
     bool
@@ -93,7 +87,7 @@ struct task_manager
             std::swap(task_queue_, tasks);
         }
         
-        for (task_type const & task : tasks)
+        for (task_type & task : tasks)
             task();
     }
 
